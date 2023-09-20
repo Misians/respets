@@ -1,0 +1,52 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User{
+  id Int @id @default(autoincrement())
+  name String?
+  email String @unique
+  Post Post[]
+
+  @@map("users")
+}
+
+model Post {
+  id Int @id @default(autoincrement())
+  title String?
+  content String @db.VarChar(255)
+  userId Int
+  animalId    Int?
+  animal      Animal?  @relation(fields: [animalId], references: [id])
+  author User @relation(fields: [userId], references: [id])
+
+  @@map("posts")
+}
+model Animal {
+  id      Int      @id @default(autoincrement())
+  nome    String
+  especie String
+  cor String
+  detalhes String @db.VarChar(255)
+  fotos   Foto[]   // Relação com o modelo Foto
+  posts   Post[]   // Relação com o modelo Post
+  @@map("animais")
+}
+
+model Foto {
+  id        Int      @id @default(autoincrement())
+  url       String   // Campo para armazenar o caminho ou URL da imagem
+  animalId  Int
+  animal    Animal   @relation(fields: [animalId], references: [id])
+
+  @@map("imagens")
+}
+
